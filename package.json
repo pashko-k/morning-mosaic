@@ -1,0 +1,11 @@
+{
+  "name": "guess-mosaic-game",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "gen:icons": "node scripts/gen-icons.js",
+  "build:dicts": "node raw_words/fetch-build-dicts.mjs",
+  "build:dicts:insecure": "INSECURE_FETCH=1 node raw_words/fetch-build-dicts.mjs"
+  },
+  "dependencies": {}
+}

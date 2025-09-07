@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Guess Mosaic</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+  <h1>Guess Mosaic</h1>
+    <div class="actions">
+  <button id="shareBtn" aria-label="Share result">Share</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="toast" role="status" aria-live="polite"></section>
+    <section id="board" class="board" aria-label="Puzzle board"></section>
+    <section id="keyboard" class="keyboard" aria-label="On-screen keyboard"></section>
+  </main>
+
+  <dialog id="settingsDialog">
+    <form method="dialog" id="settingsForm">
+      <h2>Settings</h2>
+
+      <label class="row">
+        <span>Language</span>
+        <select id="lang">
+          <option value="en">English</option>
+          <option value="uk">Українська</option>
+        </select>
+      </label>
+
+      <label class="row">
+        <span>Custom answer (optional)</span>
+        <input id="customAnswer" type="text" placeholder="e.g., IRPIN" pattern="[A-Za-zА-Яа-яЇїІіЄєҐґ]{3,8}" />
+      </label>
+
+      <label class="row">
+        <span>Custom word list (comma or newline separated)</span>
+        <textarea id="customList" rows="5" placeholder="irpin, kyiv, lviv"></textarea>
+      </label>
+
+      <div class="hint">Tip: Use 5-letter words for the classic feel. The game adapts to the answer length.</div>
+
+      <menu>
+        <button id="resetBtn" type="button">Reset today</button>
+        <button value="cancel">Close</button>
+        <button id="saveBtn" value="default">Save</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <script src="app.js" type="module"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js');
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "en": {
+    "lengths": [5],
+    "sources": [
+      "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt"
+    ],
+    "frequency": {
+      "url": "https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018/en/en_50k.txt",
+      "top": 50000
+    }
+  },
+  "uk": {
+    "lengths": [5],
+    "sources": [
+  "https://raw.githubusercontent.com/LibreOffice/dictionaries/master/uk_UA/uk_UA.dic"
+    ],
+    "frequency": {
+  "url": "https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018/uk/uk_50k.txt",
+  "top": 50000,
+  "strategy": "intersection"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-const CACHE = "guessmosaic-v1.01";
+const CACHE = "guessmosaic-v1.02";
 const ASSETS = [
   "./",
   "./index.html",

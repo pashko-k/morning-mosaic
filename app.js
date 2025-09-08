@@ -2,22 +2,22 @@
 import { encodedEN, encodedUK, encodedAllowedEN, encodedAllowedUK } from './wordlist-obf.js';
 
 // Build/version tag
-const APP_VERSION = 'v0.5.3-2025-09-08-01';
+const APP_VERSION = 'v0.5.4-2025-09-08-02';
 console.log('[GuessMosaic] Version', APP_VERSION);
 
 // ---------------- Decode lists ----------------
 function xorDecode(str, key) {
-  return str.split('').map((c,i)=>String.fromCharCode(c.charCodeAt(0)^key.charCodeAt(i%key.length))).join('');
+  return str.split('').map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))).join('');
 }
-const key='fd@3r!@#rxc$%g';
-function decodeList(encoded){
+const key = 'fd@3r!@#rxc$%g';
+function decodeList(encoded) {
   try {
     const bin = atob(encoded);
-    const bytes = Uint8Array.from(bin, c=>c.charCodeAt(0));
+    const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
     const xoredStr = new TextDecoder().decode(bytes); // XOR'ed JSON string
     const jsonStr = xorDecode(xoredStr, key);
-    return JSON.parse(jsonStr).map(w=>w.normalize('NFC').toUpperCase());
-  } catch(e){
+    return JSON.parse(jsonStr).map(w => w.normalize('NFC').toUpperCase());
+  } catch (e) {
     console.error('Failed to decode word list', e);
     return [];
   }
@@ -55,11 +55,11 @@ function allowedSetFor(lang) {
 // Deterministic daily selection (UTC date) so everyone gets same word per language per day.
 function dailyIndex(words, lang) {
   // Base epoch for stability
-  const epoch = Date.UTC(2025,0,1) / 86400000; // days since 1970 for Jan 1 2025
+  const epoch = Date.UTC(2025, 0, 1) / 86400000; // days since 1970 for Jan 1 2025
   const today = Date.now() / 86400000; // days since 1970
   const dayNumber = Math.floor(today - epoch);
   // Simple LCG mix with lang hash
-  let h = 0; for (let i=0;i<lang.length;i++) h = (h*31 + lang.charCodeAt(i)) >>> 0;
+  let h = 0; for (let i = 0; i < lang.length; i++) h = (h * 31 + lang.charCodeAt(i)) >>> 0;
   const mix = (dayNumber * 1103515245 + 12345 + h) >>> 0;
   return mix % words.length;
 }
@@ -86,19 +86,19 @@ function evaluateGuess(guess, target) {
   const len = target.length;
   const result = Array(len).fill('absent');
   const counts = {};
-  for (let i=0;i<len;i++) {
+  for (let i = 0; i < len; i++) {
     const ch = target[i];
     counts[ch] = (counts[ch] || 0) + 1;
   }
   // First pass: correct positions
-  for (let i=0;i<len;i++) {
+  for (let i = 0; i < len; i++) {
     if (guess[i] === target[i]) {
       result[i] = 'correct';
       counts[guess[i]] -= 1;
     }
   }
   // Second pass: presents
-  for (let i=0;i<len;i++) {
+  for (let i = 0; i < len; i++) {
     if (result[i] === 'correct') continue;
     const g = guess[i];
     if (counts[g] > 0) {
@@ -112,13 +112,13 @@ function evaluateGuess(guess, target) {
 function renderBoard() {
   board.innerHTML = '';
   board.style.setProperty('--cols', targetWord.length);
-  for (let i=0;i<maxAttempts;i++) {
+  for (let i = 0; i < maxAttempts; i++) {
     const row = document.createElement('div');
     row.className = 'row';
     const guess = i < attempts.length ? attempts[i] : (i === attempts.length ? currentGuess : '');
     const finalized = i < attempts.length;
     const evalStatuses = finalized ? evaluateGuess(guess, targetWord) : [];
-    for (let j=0;j<targetWord.length;j++) {
+    for (let j = 0; j < targetWord.length; j++) {
       const tile = document.createElement('div');
       tile.className = 'tile';
       const letter = guess[j] || '';
@@ -142,7 +142,7 @@ function computeStatuses() {
   const status = {};
   attempts.forEach(g => {
     const evalSt = evaluateGuess(g, targetWord);
-    for (let i=0;i<g.length;i++) {
+    for (let i = 0; i < g.length; i++) {
       const l = g[i];
       const st = evalSt[i];
       if (st === 'correct') status[l] = 'correct';
@@ -161,8 +161,8 @@ function renderKeyboard() {
   const status = computeStatuses();
   const rows = currentLang === 'uk'
     // Standard Ukrainian layout (ЙЦУКЕН): three rows
-    ? ['ЙЦУКЕНГШЩЗХЇ','ФІВАПРОЛДЖЄ','ЯЧСМИТЬБЮҐ']
-    : ['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'];
+    ? ['ЙЦУКЕНГШЩЗХЇ', 'ФІВАПРОЛДЖЄ', 'ЯЧСМИТЬБЮҐ']
+    : ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
   rows.forEach((rowStr, idx) => {
     const rowEl = document.createElement('div');
     rowEl.className = 'krow';
@@ -257,7 +257,7 @@ function saveState() {
   try {
     const payload = { dayId: dayId(), lang: currentLang, solution: targetWord, attempts, currentGuess, gameOver };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  } catch(_) {}
+  } catch (_) { }
 }
 
 function loadState() {
@@ -265,7 +265,7 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     return JSON.parse(raw);
-  } catch(_) { return null; }
+  } catch (_) { return null; }
 }
 
 function startGame(manualSwitch = false) {
@@ -304,7 +304,7 @@ function buildShareText() {
   const lines = attempts.filter(g => g.length === targetWord.length);
   const emojiLines = lines.map(g => {
     const evalSt = evaluateGuess(g, targetWord);
-    return evalSt.map(st => st==='correct' ? '�' : st==='present' ? '🟨' : '⬛').join('');
+    return evalSt.map(st => st === 'correct' ? '🟩' : st === 'present' ? '🟨' : '⬛').join('');
   });
   const solved = gameOver && lines[lines.length - 1] === targetWord;
   const attemptsCount = solved ? lines.length : 'X';

@@ -2,7 +2,7 @@
 import { encodedEN, encodedUK, encodedAllowedEN, encodedAllowedUK } from './wordlist-obf.js';
 
 // Build/version tag
-const APP_VERSION = 'v0.5.2-2025-09-07-uk-keyboard';
+const APP_VERSION = 'v0.5.3-2025-09-08-01';
 console.log('[GuessMosaic] Version', APP_VERSION);
 
 // ---------------- Decode lists ----------------
@@ -35,6 +35,7 @@ let currentGuess = '';      // in-progress guess
 let maxAttempts = 6;
 let gameOver = false;
 const STORAGE_KEY = 'guessmosaic-state-v1';
+let firstLoad = true;
 
 
 // --- DOM elements ---
@@ -248,7 +249,7 @@ function switchLanguageWithConfirm() {
     if (!window.confirm('Switch language and lose current progress?')) return;
   }
   currentLang = currentLang === 'en' ? 'uk' : 'en';
-  startGame();
+  startGame(true);
   showMessage(currentLang === 'en' ? 'Language: English' : 'Мова: Українська');
 }
 
@@ -267,17 +268,25 @@ function loadState() {
   } catch(_) { return null; }
 }
 
-function startGame() {
+function startGame(manualSwitch = false) {
   const today = dayId();
   const restored = loadState();
+  if (!manualSwitch && firstLoad && restored && restored.dayId === today && restored.lang) {
+    currentLang = restored.lang;
+  }
+
   const solution = pickWord();
   if (!solution) { showMessage('No words loaded'); return; }
+
   if (restored && restored.dayId === today && restored.lang === currentLang && restored.solution === solution) {
+    // Restore prior progress
     targetWord = restored.solution;
-    attempts = restored.attempts || [];
+    attempts = Array.isArray(restored.attempts) ? restored.attempts.slice(0, maxAttempts) : [];
     currentGuess = restored.currentGuess || '';
+    if (currentGuess.length > solution.length) currentGuess = currentGuess.slice(0, solution.length);
     gameOver = !!restored.gameOver;
   } else {
+    // Fresh daily game
     targetWord = solution;
     attempts = [];
     currentGuess = '';
@@ -286,6 +295,7 @@ function startGame() {
   saveState();
   renderBoard();
   renderKeyboard();
+  firstLoad = false;
 }
 
 // --- Share feature ---
@@ -327,7 +337,7 @@ if (shareBtn) {
   shareBtn.addEventListener('click', shareResult);
 }
 
-startGame();
+startGame(false);
 
 // --- Physical keyboard support ---
 window.addEventListener('keydown', (e) => {
